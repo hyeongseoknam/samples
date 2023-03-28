@@ -1,0 +1,49 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.0-SNAPSHOT'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'com.google.cloud.tools.jib' version '3.1.2'
+	id 'war'
+}
+
+group = 'demo.whatap'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+dependencies {
+	implementation ('org.springframework.boot:spring-boot-starter-web'){
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+	}
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-jetty'
+}
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+apply(plugin: "war")
+bootWar { 
+	enabled = false 
+	archiveBaseName = "simpleweb"
+	archiveVersion = "1.0.0-SNAPSHOT"
+}
+
+jar { enabled = false }
+war { enabled = true }
+
+jib {
+
+	to {
+        image = 'registry.whatap.io:5000/dev/hsnam-image'
+        tags = ['whatapapm_enabled']
+    }
+}
+
